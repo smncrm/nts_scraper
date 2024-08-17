@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 
 
-def scrape_website(url):
+def scrape_tracks(url):
     # Send a GET request to the URL
     response = requests.get(url)
 
