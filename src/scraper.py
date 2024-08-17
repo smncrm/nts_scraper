@@ -1,5 +1,7 @@
+import time
 import requests
 from bs4 import BeautifulSoup
+from selenium import webdriver
 from urllib.parse import urljoin
 
 
@@ -24,12 +26,22 @@ def scrape_tracks(url):
         print(f"Failed to retrieve the webpage. Status code: {response.status_code}")
         return None
 
-def scrape_episodes(url):
+def scrape_episodes(url, dynamic_page=True, scroll_pause_time=2):
     """Scrapes all urls to individual episodes from an NTS show."""
     response = requests.get(url)
 
     if response.status_code == 200:
-        soup = BeautifulSoup(response.text, "html.parser")
+        if dynamic_page:
+            driver = webdriver.Safari()
+            driver.get(url)
+
+            scroll_down(driver=driver, scroll_pause_time=scroll_pause_time)
+
+            soup = BeautifulSoup(driver.page_source, 'html.parser')
+            driver.quit()
+        else:
+            soup = BeautifulSoup(response.text, 'html.parser')
+    
         episodes = soup.find_all("div", class_="nts-grid-v2-item__content")
 
         # Process and store the extracted data
@@ -44,3 +56,21 @@ def scrape_episodes(url):
     else:
         print(f"Failed to retrieve the webpage. Status code: {response.status_code}")
         return None
+
+
+def scroll_down(driver, scroll_pause_time):
+    # Scroll down all the way
+    last_height = driver.execute_script("return document.body.scrollHeight")
+
+    while True:
+        # Scroll down to bottom
+        driver.execute_script(f"window.scrollTo(0, {last_height+10});")
+        
+        # Wait to load page
+        time.sleep(scroll_pause_time)
+
+        # Calculate new scroll height and compare with last scroll height
+        new_height = driver.execute_script("return document.body.scrollHeight")
+        if new_height == last_height:
+            break
+        last_height = new_height
