@@ -3,5 +3,5 @@ class Track:
         self.artist = artist
         self.title = title
 
-    def set_year(self, year: str):
-        self.year = year
+    def __str__(self):
+        return f"{self.artist} - {self.title}"

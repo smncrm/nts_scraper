@@ -5,6 +5,8 @@ import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
 
+from Track import Track
+
 
 def scrape_tracks(url):
     """Scrapes all tracks from an NTS episode."""
@@ -17,10 +19,10 @@ def scrape_tracks(url):
         # Process and store the extracted data
         extracted_tracks = {}
         for ix, t in enumerate(tracks):
-            extracted_tracks[ix] = {
-                "artist": t.find("span", class_="track__artist").text,
-                "title": t.find("span", class_="track__title").text,
-            }
+            extracted_tracks[ix] = Track(
+                artist=t.find("span", class_="track__artist").text,
+                title=t.find("span", class_="track__title").text,
+            )
 
         return extracted_tracks
     else:
