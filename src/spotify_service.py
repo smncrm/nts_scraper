@@ -47,4 +47,12 @@ class SpotifyService:
             return None
 
     def add_tracks_to_playlist(self, playlist_id, track_uris: List[str]):
-        self.sp.playlist_add_items(playlist_id, track_uris)
+        # break track_uris into smaller parts as there is a API limit:
+        n = 100
+        split_track_uris = [
+            track_uris[i * n : (i + 1) * n]
+            for i in range((len(track_uris) + n - 1) // n)
+        ]
+
+        for split_tracks in split_track_uris:
+            self.sp.playlist_add_items(playlist_id, split_tracks)
