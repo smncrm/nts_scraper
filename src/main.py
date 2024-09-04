@@ -7,9 +7,12 @@ show_url = "https://www.nts.live/shows/macca"
 episode_url = "https://www.nts.live/shows/macca/episodes/macca-10th-august-2024"
 tracks = scrape_tracks(episode_url)
 
-track_one = tracks[0]
-print(track_one)
-
 spotify_service = SpotifyService()
 
-print(spotify_service.search_track(track_one))
+for track in tracks.values():
+    res = spotify_service.search_track(track)
+    print(f"NTS: {track}")
+    if not res:
+        print(f"SPF: NOTHING - NOTHING")
+    else:
+        print(f"SPF: {res['artist']} - {res['name']}")
