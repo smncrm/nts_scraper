@@ -9,5 +9,16 @@ def get_user_playlists():
     playlists = sp.current_user_playlists()
     return {playlist['name']: playlist['id'] for playlist in playlists['items']}
 
-get_user_playlists()
+def create_playlist():
+    playlist_name = input("Enter the name of the playlist you want to add songs to: ")
+    
+    user_playlists = get_user_playlists()
+    playlist_id = user_playlists.get(playlist_name)
+    
+    if playlist_id:
+        print("Playlist existst already.")
+    else:
+        sp.user_playlist_create(user=sp.me()['id'], name=playlist_name)
+        return
 
+create_playlist()
