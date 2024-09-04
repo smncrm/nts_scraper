@@ -1,8 +1,9 @@
 import time
+from urllib.parse import urljoin
+
 import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
-from urllib.parse import urljoin
 
 
 def scrape_tracks(url):
@@ -26,6 +27,7 @@ def scrape_tracks(url):
         print(f"Failed to retrieve the webpage. Status code: {response.status_code}")
         return None
 
+
 def scrape_episodes(url, dynamic_page=True, scroll_pause_time=2):
     """Scrapes all urls to individual episodes from an NTS show."""
     response = requests.get(url)
@@ -37,11 +39,11 @@ def scrape_episodes(url, dynamic_page=True, scroll_pause_time=2):
 
             scroll_down(driver=driver, scroll_pause_time=scroll_pause_time)
 
-            soup = BeautifulSoup(driver.page_source, 'html.parser')
+            soup = BeautifulSoup(driver.page_source, "html.parser")
             driver.quit()
         else:
-            soup = BeautifulSoup(response.text, 'html.parser')
-    
+            soup = BeautifulSoup(response.text, "html.parser")
+
         episodes = soup.find_all("div", class_="nts-grid-v2-item__content")
 
         # Process and store the extracted data
@@ -49,7 +51,9 @@ def scrape_episodes(url, dynamic_page=True, scroll_pause_time=2):
         for ix, e in enumerate(episodes):
             extracted_episodes[ix] = {
                 "title": e.find("div", class_="nts-grid-v2-item__header__title").text,
-                "url": urljoin(url, e.find("a", class_="nts-grid-v2-item__header nts-app")['href']),
+                "url": urljoin(
+                    url, e.find("a", class_="nts-grid-v2-item__header nts-app")["href"]
+                ),
             }
 
         return extracted_episodes
@@ -65,7 +69,7 @@ def scroll_down(driver, scroll_pause_time):
     while True:
         # Scroll down to bottom
         driver.execute_script(f"window.scrollTo(0, {last_height+10});")
-        
+
         # Wait to load page
         time.sleep(scroll_pause_time)
 
